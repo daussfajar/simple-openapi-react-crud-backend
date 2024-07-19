@@ -1,9 +1,19 @@
 import db from "../config/database.js";
 
-export const fetchProducts = async (page = 1, perPage = 10) => {
+export const fetchProducts = async (page = 1, perPage = 10, keyword = null) => {
     try {
         // Hitung offset
         const offset = (page - 1) * perPage;
+
+        // Hitung last page
+        const totalProducts = await countProducts() || 0;
+        const lastPage = Math.ceil(totalProducts / perPage)
+
+        // Search query
+        let searchQuery = '';
+        if (keyword !== null) {
+            searchQuery = `WHERE a.title LIKE '%${keyword}%'`;
+        }
 
         // Query untuk mengambil produk dengan pagination
         const query = `
@@ -23,12 +33,20 @@ export const fetchProducts = async (page = 1, perPage = 10) => {
                 ON a.category_id = b.category_id
             LEFT JOIN product_brands AS c
                 ON a.brand_id = c.brand_id
+            ${searchQuery}
             ORDER BY a.id DESC
             LIMIT ?, ?
         `;
         
         const [rows] = await db.query(query, [offset, perPage]);
-        return rows;
+        return {
+            currentPage: page,
+            perPage: perPage,
+            totalProducts: totalProducts,
+            firstPage: 1,
+            lastPage: lastPage,
+            products: rows
+        }
     } catch (error) {
         throw new Error('Database query failed');
     }
