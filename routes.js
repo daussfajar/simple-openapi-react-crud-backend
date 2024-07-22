@@ -1,8 +1,15 @@
 import express, { Router } from "express";
 import { loginUser } from "./controllers/Auth.js";
-import { getProducts, getProductById } from "./controllers/Products.js";
+import { 
+    getProducts, 
+    getProductById, 
+    addProduct,
+    updateProduct,
+    deleteProduct
+} from "./controllers/Products.js";
 import { jwtAuth } from "./middleware/jwt.js";
 import { validateId } from "./middleware/ValidateId.js";
+import { getProductByIdMiddleware } from "./middleware/Products.js";
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -16,6 +23,7 @@ const handleValidationErrors = (req, res, next) => {
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
     }
+    
     next();
 };
 
@@ -34,5 +42,21 @@ router.post(
 
 router.get(apiPath + "products", jwtAuth, getProducts);
 router.get(apiPath + "products/:id", jwtAuth, validateId, getProductById);
+router.post(apiPath + "products", jwtAuth, addProduct);
+router.put(apiPath + "products/:id", jwtAuth, validateId, getProductByIdMiddleware,
+    // validataion
+    [
+        body("title", "Title field is required").not().isEmpty(),
+        body("description", "Description field is required").not().isEmpty(),
+        body("category_id", "Category ID field is required").not().isEmpty().isInt(),
+        body("price", "Price field is required").not().isEmpty().isNumeric(),
+        body("stock", "Stock field is required").not().isEmpty().isInt(),
+        body("brand_id", "Brand ID field is required").not().isEmpty().isInt(),
+        body("sku", "SKU field is required").not().isEmpty(),
+        handleValidationErrors, //  Middleware untuk menangani kesalahan validasi
+    ],    
+    updateProduct
+);
+router.delete(apiPath + "products/:id", jwtAuth, validateId, getProductByIdMiddleware, deleteProduct);
 
 export default router;
