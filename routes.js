@@ -7,6 +7,8 @@ import {
     updateProduct,
     deleteProduct
 } from "./controllers/Products.js";
+import apiKeyMiddleware from "./middleware/apiKey.js";
+import ipWhitelistMiddleware from './middleware/ipWhitelist.js';
 import { jwtAuth } from "./middleware/jwt.js";
 import { validateId } from "./middleware/ValidateId.js";
 import { getProductByIdMiddleware } from "./middleware/Products.js";
@@ -31,6 +33,8 @@ const handleValidationErrors = (req, res, next) => {
 const apiPath = process.env.VERSION_URL || "/api/v1";
 router.post(
     apiPath + "login",
+    ipWhitelistMiddleware,
+    apiKeyMiddleware,
     [
         body("email", "Please enter a valid email").isEmail().not().isEmpty(),
         body("password", "Password field is required").not().isEmpty(),
@@ -40,10 +44,31 @@ router.post(
     loginUser
 );
 
-router.get(apiPath + "products", jwtAuth, getProducts);
-router.get(apiPath + "products/:id", jwtAuth, validateId, getProductById);
-router.post(apiPath + "products", jwtAuth, addProduct);
-router.put(apiPath + "products/:id", jwtAuth, validateId, getProductByIdMiddleware,
+router.get(apiPath + "products", 
+    ipWhitelistMiddleware,
+    apiKeyMiddleware, 
+    jwtAuth, 
+    getProducts
+);
+router.get(apiPath + "products/:id", 
+    ipWhitelistMiddleware,
+    apiKeyMiddleware, 
+    jwtAuth, 
+    validateId, 
+    getProductById
+);
+router.post(apiPath + "products", 
+    ipWhitelistMiddleware,
+    apiKeyMiddleware, 
+    jwtAuth, 
+    addProduct
+);
+router.put(apiPath + "products/:id", 
+    ipWhitelistMiddleware,
+    apiKeyMiddleware, 
+    jwtAuth, 
+    validateId, 
+    getProductByIdMiddleware,
     // validataion
     [
         body("title", "Title field is required").not().isEmpty(),
@@ -57,6 +82,13 @@ router.put(apiPath + "products/:id", jwtAuth, validateId, getProductByIdMiddlewa
     ],    
     updateProduct
 );
-router.delete(apiPath + "products/:id", jwtAuth, validateId, getProductByIdMiddleware, deleteProduct);
+router.delete(apiPath + "products/:id", 
+    ipWhitelistMiddleware,
+    apiKeyMiddleware, 
+    jwtAuth, 
+    validateId, 
+    getProductByIdMiddleware, 
+    deleteProduct
+);
 
 export default router;
