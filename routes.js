@@ -1,5 +1,5 @@
 import express, { Router } from "express";
-import { loginUser } from "./controllers/Auth.js";
+import { loginUser, verifyToken } from "./controllers/Auth.js";
 import { 
     getProducts, 
     getProductById, 
@@ -42,6 +42,12 @@ router.post(
         handleValidationErrors, // Middleware untuk menangani kesalahan validasi
     ],
     loginUser
+);
+
+router.get(apiPath + "verify-token", 
+    ipWhitelistMiddleware,
+    apiKeyMiddleware,
+    verifyToken
 );
 
 router.get(apiPath + "products", 

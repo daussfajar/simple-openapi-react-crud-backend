@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken"
 export const generateAccessToken = (username) => {
     return jwt.sign(username, process.env.TOKEN_SECRET, {
         algorithm: 'HS256',
-        expiresIn: '1800s'
+        expiresIn: 18000 // 5 hours
     })
 }
 

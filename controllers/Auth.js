@@ -2,6 +2,7 @@ import {generateAccessToken} from "../middleware/jwt.js";
 import escape_html from "escape-html";
 import { validationResult } from "express-validator";
 import crypto from "crypto-js";
+import jwt from "jsonwebtoken"
 
 import { findEmailUser } from "../services/User.js";
 
@@ -38,7 +39,9 @@ export const loginUser = async (req, res) => {
         }
 
         const token = generateAccessToken({
-            username: user.email
+            id: user.id,
+            fullname: user.fullname,
+            email: user.email
         });
 
         return res.status(200).json({
@@ -56,3 +59,42 @@ export const loginUser = async (req, res) => {
         });
     }
 };
+
+export const verifyToken = async (req, res) => {
+    try {
+        const authHeader = req.header("Authorization");
+
+        if (!authHeader) {
+            return res.status(401).json({
+                message: "Access denied, no token provided"
+            });
+        }
+
+        const token = authHeader.split(' ')[1];
+
+        if (!token) {
+            return res.status(401).json({
+                message: "Access denied, no token provided"
+            });
+        }
+
+        try {
+            const decoded = jwt.verify(token, process.env.TOKEN_SECRET);
+            req.user = decoded;
+            return res.status(200).json({
+                message: "Token is valid",
+                data: req.user
+            });
+        } catch (error) {
+            return res.status(400).json({
+                message: "Invalid token"
+            });
+        }
+    } catch (error) {
+        return res.status(500).json({
+            message: error.message
+        });
+    }
+}
+
+export default [loginUser, verifyToken]
