@@ -7,6 +7,7 @@ import {
     updateProduct,
     deleteProduct
 } from "./controllers/Products.js";
+import { fetchProductCategoriesService as getProductCategories } from "./services/ProductCategories.js";
 import apiKeyMiddleware from "./middleware/apiKey.js";
 import ipWhitelistMiddleware from './middleware/ipWhitelist.js';
 import { jwtAuth } from "./middleware/jwt.js";
@@ -95,6 +96,13 @@ router.delete(apiPath + "products/:id",
     validateId, 
     getProductByIdMiddleware, 
     deleteProduct
+);
+
+router.get(apiPath + "product-categories", 
+    ipWhitelistMiddleware,
+    apiKeyMiddleware, 
+    jwtAuth, 
+    getProductCategories
 );
 
 export default router;
