@@ -3,7 +3,7 @@ import db from "../config/database.js";
 export const fetchProductCategoriesService = async () => {
     try {
         const query = `
-            SELECT category_id, category_name 
+            SELECT category_id, category_name, category_description 
             FROM product_categories 
             ORDER BY category_name ASC
         `;
