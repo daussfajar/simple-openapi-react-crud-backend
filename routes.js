@@ -7,7 +7,9 @@ import {
     updateProduct,
     deleteProduct
 } from "./controllers/Products.js";
-import { fetchProductCategoriesService as getProductCategories } from "./services/ProductCategories.js";
+import getProductCategories from "./controllers/ProductCategories.js";
+import getBrands from "./controllers/Brands.js";
+
 import apiKeyMiddleware from "./middleware/apiKey.js";
 import ipWhitelistMiddleware from './middleware/ipWhitelist.js';
 import { jwtAuth } from "./middleware/jwt.js";
@@ -103,6 +105,13 @@ router.get(apiPath + "product-categories",
     apiKeyMiddleware, 
     jwtAuth, 
     getProductCategories
+);
+
+router.get(apiPath + "brands", 
+    ipWhitelistMiddleware,
+    apiKeyMiddleware, 
+    jwtAuth, 
+    getBrands
 );
 
 export default router;
