@@ -8,7 +8,9 @@ import {
     deleteProduct
 } from "./controllers/Products.js";
 import getProductCategories from "./controllers/ProductCategories.js";
-import getBrands from "./controllers/Brands.js";
+import {
+    getBrands, addBrands
+} from "./controllers/Brands.js";
 
 import apiKeyMiddleware from "./middleware/apiKey.js";
 import ipWhitelistMiddleware from './middleware/ipWhitelist.js';
@@ -113,5 +115,16 @@ router.get(apiPath + "brands",
     jwtAuth, 
     getBrands
 );
+
+router.post(apiPath + "brands",
+    ipWhitelistMiddleware,
+    apiKeyMiddleware,
+    jwtAuth,
+    [
+        body("name", "Name field is required").not().isEmpty(),
+        handleValidationErrors, //
+    ],
+    addBrands
+)
 
 export default router;

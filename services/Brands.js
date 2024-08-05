@@ -15,4 +15,18 @@ export const fetchBrandsService = async () => {
     }
 }
 
-export default fetchBrandsService;
+export const addBrandsService = async (brand) => {
+    try {
+        const query = `
+            INSERT INTO product_brands (brand_name, brand_description) 
+            VALUES (?, ?)
+        `;
+
+        const [result] = await db.query(query, [brand.name, brand.description]);
+        return result;
+    } catch (error) {
+        throw error;
+    }
+}
+
+export default {fetchBrandsService, addBrandsService};
