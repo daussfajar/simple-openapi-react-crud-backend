@@ -9,7 +9,11 @@ import {
 } from "./controllers/Products.js";
 import getProductCategories from "./controllers/ProductCategories.js";
 import {
-    getBrands, addBrands
+    getBrands, 
+    getBrandsById,
+    addBrands,
+    updateBrands,
+    deleteBrands
 } from "./controllers/Brands.js";
 
 import apiKeyMiddleware from "./middleware/apiKey.js";
@@ -116,6 +120,14 @@ router.get(apiPath + "brands",
     getBrands
 );
 
+router.get(apiPath + "brands/:id", 
+    ipWhitelistMiddleware,
+    apiKeyMiddleware, 
+    jwtAuth, 
+    validateId, 
+    getBrandsById
+);
+
 router.post(apiPath + "brands",
     ipWhitelistMiddleware,
     apiKeyMiddleware,
@@ -125,6 +137,24 @@ router.post(apiPath + "brands",
         handleValidationErrors, //
     ],
     addBrands
+)
+
+router.put(apiPath + "brands/:id",
+    ipWhitelistMiddleware,
+    apiKeyMiddleware,
+    jwtAuth,
+    [
+        body("name", "Name field is required").not().isEmpty(),
+        handleValidationErrors, //
+    ],
+    updateBrands
+)
+
+router.delete(apiPath + "brands/:id",
+    ipWhitelistMiddleware,
+    apiKeyMiddleware,
+    jwtAuth,
+    deleteBrands
 )
 
 export default router;

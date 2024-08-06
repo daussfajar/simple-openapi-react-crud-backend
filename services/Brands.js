@@ -15,6 +15,21 @@ export const fetchBrandsService = async () => {
     }
 }
 
+export const fetchBrandsByIdService = async (id) => {
+    try {
+        const query = `
+            SELECT brand_id, brand_name, brand_description 
+            FROM product_brands 
+            WHERE brand_id = ?
+        `;
+
+        const [rows] = await db.query(query, [id]);
+        return rows;
+    } catch (error) {
+        throw error;
+    }
+}
+
 export const addBrandsService = async (brand) => {
     try {
         const query = `
@@ -29,4 +44,39 @@ export const addBrandsService = async (brand) => {
     }
 }
 
-export default {fetchBrandsService, addBrandsService};
+export const updateBrandsService = async (id, brand) => {
+    try {
+        const query = `
+            UPDATE product_brands 
+            SET brand_name = ?, brand_description = ? 
+            WHERE brand_id = ?
+        `;
+
+        const [result] = await db.query(query, [brand.name, brand.description, id]);
+        return result;
+    } catch (error) {
+        throw error;
+    }
+}
+
+export const deleteBrandsService = async (id) => {
+    try {
+        const query = `
+            DELETE FROM product_brands 
+            WHERE brand_id = ?
+        `;
+
+        const [result] = await db.query(query, [id]);
+        return result;
+    } catch (error) {
+        throw error;
+    }
+}
+
+export default {
+    fetchBrandsService, 
+    addBrandsService, 
+    updateBrandsService, 
+    deleteBrandsService,
+    fetchBrandsByIdService
+};
